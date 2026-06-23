@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useGetClinicStats } from "@workspace/api-client-react";
+import { useGetClinicStats, type ClinicStats } from "@workspace/api-client-react";
 import { Users, Award, TrendingUp, Clock } from "lucide-react";
+import { fallbackClinicStats } from "@/lib/mock-data";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -40,7 +41,14 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
 }
 
-const statsConfig = [
+const statsConfig: Array<{
+  icon: typeof Users;
+  label: string;
+  key: keyof Pick<ClinicStats, "happyPatients" | "yearsExperience" | "successRate"> | null;
+  suffix: string;
+  fallback: number | null;
+  color: string;
+}> = [
   { icon: Users, label: "Happy Patients", key: "happyPatients", suffix: "+", fallback: 20000, color: "text-primary" },
   { icon: Award, label: "Years Experience", key: "yearsExperience", suffix: "+", fallback: 15, color: "text-accent" },
   { icon: TrendingUp, label: "Success Rate", key: "successRate", suffix: "%", fallback: 98, color: "text-emerald-500 dark:text-emerald-400" },
@@ -49,6 +57,7 @@ const statsConfig = [
 
 export function Stats() {
   const { data: stats } = useGetClinicStats();
+  const clinicStats = stats && typeof stats === "object" ? stats : fallbackClinicStats;
 
   return (
     <section id="about" className="py-24 relative overflow-hidden bg-background">
@@ -70,7 +79,7 @@ export function Stats() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {statsConfig.map((stat, i) => {
             const Icon = stat.icon;
-            const value = stat.key && stats ? (stats as Record<string, number>)[stat.key] : stat.fallback;
+            const value = stat.key ? clinicStats[stat.key] : stat.fallback;
             return (
               <motion.div
                 key={stat.label}

@@ -3,6 +3,7 @@ import { useListDoctors } from "@workspace/api-client-react";
 import { Star, Clock, Users, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { fallbackDoctors } from "@/lib/mock-data";
 
 function DoctorAvatar({ name }: { name: string }) {
   const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
@@ -24,6 +25,7 @@ function DoctorAvatar({ name }: { name: string }) {
 
 export function Doctors({ onBookClick }: { onBookClick: () => void }) {
   const { data: doctors, isLoading } = useListDoctors();
+  const doctorList = Array.isArray(doctors) && doctors.length > 0 ? doctors : fallbackDoctors;
 
   return (
     <section id="doctors" className="py-24 bg-muted/30 dark:bg-background">
@@ -56,7 +58,7 @@ export function Doctors({ onBookClick }: { onBookClick: () => void }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {(doctors ?? []).map((doctor, i) => (
+            {doctorList.map((doctor, i) => (
               <motion.div
                 key={doctor.id}
                 initial={{ opacity: 0, y: 30 }}

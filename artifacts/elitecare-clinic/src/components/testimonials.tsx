@@ -2,13 +2,14 @@ import { motion } from "framer-motion";
 import { useListTestimonials } from "@workspace/api-client-react";
 import { Star, Quote } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { fallbackTestimonials } from "@/lib/mock-data";
 
 export function Testimonials() {
   const { data: testimonials, isLoading } = useListTestimonials();
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const items = testimonials ?? [];
+  const items = Array.isArray(testimonials) && testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {

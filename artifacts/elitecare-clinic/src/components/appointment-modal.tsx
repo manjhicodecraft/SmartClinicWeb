@@ -5,6 +5,7 @@ import { useListDoctors, useGetAvailableSlots, useCreateAppointment } from "@wor
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { fallbackDoctors, fallbackSlots } from "@/lib/mock-data";
 
 interface AppointmentModalProps {
   open: boolean;
@@ -26,13 +27,16 @@ export function AppointmentModal({ open, onClose }: AppointmentModalProps) {
   const [success, setSuccess] = useState(false);
 
   const { data: doctors, isLoading: loadingDoctors } = useListDoctors();
+  const slotParams = { doctorId: selectedDoctor ?? undefined, date: date || undefined };
   const { data: slots, isLoading: loadingSlots } = useGetAvailableSlots(
-    { doctorId: selectedDoctor ?? undefined, date: date || undefined },
-    { query: { enabled: !!selectedDoctor && !!date } }
+    slotParams,
+    { query: { queryKey: ["/api/appointments/slots", slotParams], enabled: !!selectedDoctor && !!date } }
   );
+  const doctorList = Array.isArray(doctors) && doctors.length > 0 ? doctors : fallbackDoctors;
+  const slotList = Array.isArray(slots) && slots.length > 0 ? slots : fallbackSlots;
   const mutation = useCreateAppointment();
 
-  const doctor = doctors?.find((d) => d.id === selectedDoctor);
+  const doctor = doctorList.find((d) => d.id === selectedDoctor);
 
   const canNext = () => {
     if (step === 0) return !!selectedDoctor;
@@ -139,7 +143,7 @@ export function AppointmentModal({ open, onClose }: AppointmentModalProps) {
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {(doctors ?? []).map((d) => (
+                          {doctorList.map((d) => (
                             <button
                               key={d.id}
                               onClick={() => setSelectedDoctor(d.id)}
@@ -190,7 +194,7 @@ export function AppointmentModal({ open, onClose }: AppointmentModalProps) {
                             </div>
                           ) : (
                             <div className="flex flex-wrap gap-2">
-                              {(slots ?? []).map((s) => (
+                              {slotList.map((s) => (
                                 <button
                                   key={s}
                                   onClick={() => setSlot(s)}
@@ -203,7 +207,7 @@ export function AppointmentModal({ open, onClose }: AppointmentModalProps) {
                                   {s}
                                 </button>
                               ))}
-                              {(slots ?? []).length === 0 && (
+                              {slotList.length === 0 && (
                                 <p className="text-sm text-muted-foreground">No slots available for this date. Please try another date.</p>
                               )}
                             </div>
