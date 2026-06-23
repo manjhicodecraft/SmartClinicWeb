@@ -15,7 +15,7 @@ function BeforeAfterCard({ item }: { item: typeof cases[0] }) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="rounded-2xl overflow-hidden border border-white/10 shadow-xl"
+      className="rounded-2xl overflow-hidden border border-border shadow-xl"
     >
       <div className="relative h-48 select-none">
         {/* Before */}
@@ -29,31 +29,31 @@ function BeforeAfterCard({ item }: { item: typeof cases[0] }) {
         >
           <span className="text-white font-semibold text-sm">After Treatment</span>
         </div>
-        {/* Divider */}
+        {/* Divider line */}
         <div
           className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] z-10"
           style={{ left: `${position}%` }}
         />
+        {/* Drag handle */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-10 cursor-ew-resize"
+          className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg z-10"
           style={{ left: `calc(${position}% - 16px)` }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M5 8H11M5 8L3 6M5 8L3 10M11 8L13 6M11 8L13 10" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        {/* Drag handler */}
         <input
           type="range"
           min={0}
           max={100}
           value={position}
           onChange={(e) => setPosition(Number(e.target.value))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
+          className="absolute inset-0 w-full h-full opacity-0 z-20"
         />
       </div>
-      <div className="bg-slate-900/80 p-4 border-t border-white/10">
-        <p className="font-display font-bold text-white text-sm">{item.label}</p>
+      <div className="bg-card p-4 border-t border-border">
+        <p className="font-display font-bold text-card-foreground text-sm">{item.label}</p>
         <p className="text-xs text-primary mt-0.5">{item.treatment}</p>
       </div>
     </motion.div>
@@ -62,7 +62,7 @@ function BeforeAfterCard({ item }: { item: typeof cases[0] }) {
 
 export function Gallery() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-24 bg-muted/30 dark:bg-background">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

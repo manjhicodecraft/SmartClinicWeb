@@ -131,12 +131,13 @@
   }
 }
 
+/* Light mode: frosted white card. Dark mode: dark translucent card */
 .glass {
-  @apply bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
+  @apply bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200/80 dark:border-white/10 shadow-xl;
 }
 
 .glass-card {
-  @apply bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/20 dark:border-white/10 shadow-xl;
+  @apply bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-lg;
 }
 
 .text-gradient {

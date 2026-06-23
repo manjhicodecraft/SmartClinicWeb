@@ -11,9 +11,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true);
-        }
+        if (entry.isIntersecting && !started) setStarted(true);
       },
       { threshold: 0.3 }
     );
@@ -39,26 +37,22 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
     return () => clearInterval(timer);
   }, [started, target]);
 
-  return (
-    <span ref={ref}>
-      {count.toLocaleString()}{suffix}
-    </span>
-  );
+  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
 }
 
 const statsConfig = [
   { icon: Users, label: "Happy Patients", key: "happyPatients", suffix: "+", fallback: 20000, color: "text-primary" },
   { icon: Award, label: "Years Experience", key: "yearsExperience", suffix: "+", fallback: 15, color: "text-accent" },
-  { icon: TrendingUp, label: "Success Rate", key: "successRate", suffix: "%", fallback: 98, color: "text-emerald-400" },
-  { icon: Clock, label: "Emergency Support", key: null, suffix: "", fallback: null, color: "text-rose-400" },
+  { icon: TrendingUp, label: "Success Rate", key: "successRate", suffix: "%", fallback: 98, color: "text-emerald-500 dark:text-emerald-400" },
+  { icon: Clock, label: "Emergency Support", key: null, suffix: "", fallback: null, color: "text-rose-500 dark:text-rose-400" },
 ];
 
 export function Stats() {
   const { data: stats } = useGetClinicStats();
 
   return (
-    <section id="about" className="py-24 relative overflow-hidden bg-slate-950 dark:bg-slate-950">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-950/50" />
+    <section id="about" className="py-24 relative overflow-hidden bg-background">
+      <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent pointer-events-none" />
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -68,7 +62,7 @@ export function Stats() {
           className="text-center mb-16"
         >
           <span className="text-primary text-sm font-semibold tracking-widest uppercase">Our Achievements</span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mt-2">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-2">
             Numbers That <span className="text-gradient">Define Us</span>
           </h2>
         </motion.div>
@@ -86,7 +80,7 @@ export function Stats() {
                 transition={{ duration: 0.6, delay: i * 0.1 }}
                 className="glass-card rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300"
               >
-                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 mb-4`}>
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted mb-4">
                   <Icon className={`w-7 h-7 ${stat.color}`} />
                 </div>
                 <div className={`text-4xl md:text-5xl font-display font-bold ${stat.color} mb-2`}>
@@ -96,7 +90,7 @@ export function Stats() {
                     <AnimatedCounter target={value as number} suffix={stat.suffix} />
                   ) : "--"}
                 </div>
-                <div className="text-slate-300 text-sm font-medium">{stat.label}</div>
+                <div className="text-muted-foreground text-sm font-medium">{stat.label}</div>
               </motion.div>
             );
           })}
