@@ -1,22 +1,26 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EliteCare Clinic API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: doctors
+    description: Doctor operations
+  - name: appointments
+    description: Appointment operations
+  - name: clinic
+    description: Clinic stats and testimonials
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +28,144 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /doctors:
+    get:
+      operationId: listDoctors
+      tags: [doctors]
+      summary: List all doctors with availability
+      responses:
+        "200":
+          description: List of doctors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Doctor"
+
+  /doctors/{id}:
+    get:
+      operationId: getDoctor
+      tags: [doctors]
+      summary: Get a single doctor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Doctor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Doctor"
+
+  /appointments:
+    get:
+      operationId: listAppointments
+      tags: [appointments]
+      summary: List appointments
+      responses:
+        "200":
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+    post:
+      operationId: createAppointment
+      tags: [appointments]
+      summary: Book an appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Appointment booked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /appointments/slots:
+    get:
+      operationId: getAvailableSlots
+      tags: [appointments]
+      summary: Get available time slots for a date and doctor
+      parameters:
+        - name: doctorId
+          in: query
+          schema:
+            type: integer
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /clinic/stats:
+    get:
+      operationId: getClinicStats
+      tags: [clinic]
+      summary: Get clinic statistics
+      responses:
+        "200":
+          description: Clinic stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicStats"
+
+  /clinic/testimonials:
+    get:
+      operationId: listTestimonials
+      tags: [clinic]
+      summary: List patient testimonials
+      responses:
+        "200":
+          description: Testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+
+  /chat/message:
+    post:
+      operationId: sendChatMessage
+      tags: [clinic]
+      summary: Send message to AI assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +176,139 @@ components:
       required:
         - status
 
+    Doctor:
+      type: object
+      required: [id, name, specialty, qualification, experience, rating, image, availabilityStatus]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        specialty:
+          type: string
+        qualification:
+          type: string
+        experience:
+          type: string
+        rating:
+          type: number
+        patientsCount:
+          type: integer
+        image:
+          type: ["string", "null"]
+        availabilityStatus:
+          type: string
+          enum: [available, next_slot, unavailable]
+        nextAvailableTime:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+
+    Appointment:
+      type: object
+      required: [id, patientName, doctorId, date, timeSlot, reason, status, createdAt]
+      properties:
+        id:
+          type: integer
+        patientName:
+          type: string
+        patientEmail:
+          type: string
+        patientPhone:
+          type: string
+        doctorId:
+          type: integer
+        doctorName:
+          type: string
+        date:
+          type: string
+        timeSlot:
+          type: string
+        reason:
+          type: string
+        consultationType:
+          type: string
+          enum: [in_person, online]
+        status:
+          type: string
+          enum: [pending, confirmed, completed, cancelled]
+        createdAt:
+          type: string
+
+    AppointmentInput:
+      type: object
+      required: [patientName, patientEmail, patientPhone, doctorId, date, timeSlot, reason, consultationType]
+      properties:
+        patientName:
+          type: string
+        patientEmail:
+          type: string
+        patientPhone:
+          type: string
+        doctorId:
+          type: integer
+        date:
+          type: string
+        timeSlot:
+          type: string
+        reason:
+          type: string
+        consultationType:
+          type: string
+          enum: [in_person, online]
+
+    ClinicStats:
+      type: object
+      required: [happyPatients, yearsExperience, successRate, emergencySupport, doctorsCount]
+      properties:
+        happyPatients:
+          type: integer
+        yearsExperience:
+          type: integer
+        successRate:
+          type: integer
+        emergencySupport:
+          type: string
+        doctorsCount:
+          type: integer
+
+    Testimonial:
+      type: object
+      required: [id, patientName, rating, review, treatment, date]
+      properties:
+        id:
+          type: integer
+        patientName:
+          type: string
+        rating:
+          type: integer
+        review:
+          type: string
+        treatment:
+          type: string
+        date:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+
+    ChatMessageInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        sessionId:
+          type: ["string", "null"]
+
+    ChatResponse:
+      type: object
+      required: [reply, sessionId]
+      properties:
+        reply:
+          type: string
+        sessionId:
+          type: string
+        suggestedActions:
+          type: array
+          items:
+            type: string

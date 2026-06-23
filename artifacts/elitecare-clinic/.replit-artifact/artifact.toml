@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "EliteCare Clinic"
+version = "1.0.0"
+id = "artifacts/elitecare-clinic"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22062
+
+[services.development]
+run = "pnpm --filter @workspace/elitecare-clinic run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/elitecare-clinic", "run", "build" ]
+publicDir = "artifacts/elitecare-clinic/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22062"
+BASE_PATH = "/"
